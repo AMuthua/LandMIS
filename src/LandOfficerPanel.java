@@ -10,7 +10,7 @@ public class LandOfficerPanel extends JPanel {
     public LandOfficerPanel() {
         setLayout(new GridLayout(5, 1, 10, 10));
 
-        reviewApplicationsButton = new JButton("Review Land Applications");
+        reviewApplicationsButton = new JButton("Review Land Application");
         fieldInspectionsButton = new JButton("Conduct Field Inspections");
         generateReportsButton = new JButton("Generate Land Reports");
         updateRecordsButton = new JButton("Update Land Records");

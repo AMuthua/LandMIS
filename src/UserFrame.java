@@ -5,6 +5,7 @@ public class UserFrame extends JFrame {
     private User user;
     private JPanel mainPanel;
     private CardLayout cardLayout;
+    private JFrame adminFrame; // Track the instance of the AdminPanel frame
 
     public UserFrame(User user) {
         this.user = user;
@@ -70,14 +71,21 @@ public class UserFrame extends JFrame {
     }
 
     private void manageUsers() {
-        JFrame adminFrame = new JFrame("Manage Users");
-        adminFrame.setSize(600, 400);
-        adminFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        adminFrame.setLocationRelativeTo(null);
+        // Check if the adminFrame is already visible
+        if (adminFrame == null || !adminFrame.isVisible()) {
+            adminFrame = new JFrame("Manage Users");
+            adminFrame.setSize(600, 400);
+            adminFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            adminFrame.setLocationRelativeTo(null);
 
-        AdminPanel adminPanel = new AdminPanel();
-        adminFrame.add(adminPanel);
-        adminFrame.setVisible(true);
+            AdminPanel adminPanel = new AdminPanel();
+            adminFrame.add(adminPanel);
+            adminFrame.setVisible(true);
+        } else {
+            // If adminFrame is already open, bring it to the front
+            adminFrame.toFront();
+            adminFrame.requestFocus();
+        }
     }
 
     private void generateReports() {
