@@ -3,6 +3,8 @@ import java.awt.*;
 
 public class UserFrame extends JFrame {
     private User user;
+    private JPanel mainPanel;
+    private CardLayout cardLayout;
 
     public UserFrame(User user) {
         this.user = user;
@@ -16,26 +18,16 @@ public class UserFrame extends JFrame {
     }
 
     private void initComponents() {
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        JLabel welcomeLabel = new JLabel("Welcome, " + user.getUsername() + "!", JLabel.CENTER);
-        mainPanel.add(welcomeLabel, BorderLayout.NORTH);
+        mainPanel = new JPanel(new BorderLayout());
+        cardLayout = new CardLayout();
 
-        JPanel userPanel;
-        switch (user.getRole()) {
-            case "Admin":
-                userPanel = createAdminPanel();
-                break;
-            case "LandOfficer":
-                userPanel = createLandOfficerPanel();
-                break;
-            case "PublicUser":
-                userPanel = createGeneralPublicPanel();
-                break;
-            default:
-                userPanel = new JPanel();
-        }
+        JPanel contentPanel = new JPanel(cardLayout);
+        contentPanel.add(createAdminPanel(), "Admin");
+        contentPanel.add(createLandOfficerPanel(), "LandOfficer");
+        contentPanel.add(createGeneralPublicPanel(), "PublicUser");
 
-        mainPanel.add(userPanel, BorderLayout.CENTER);
+        mainPanel.add(new JLabel("Welcome, " + user.getUsername() + "!", JLabel.CENTER), BorderLayout.NORTH);
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
 
         JButton logoutButton = new JButton("Logout");
         logoutButton.addActionListener(e -> {
@@ -45,6 +37,22 @@ public class UserFrame extends JFrame {
         mainPanel.add(logoutButton, BorderLayout.SOUTH);
 
         add(mainPanel);
+
+        // Show the panel based on the user's role
+        switch (user.getRole()) {
+            case "Admin":
+                cardLayout.show(contentPanel, "Admin");
+                break;
+            case "LandOfficer":
+                cardLayout.show(contentPanel, "LandOfficer");
+                break;
+            case "PublicUser":
+                cardLayout.show(contentPanel, "PublicUser");
+                break;
+            default:
+                cardLayout.show(contentPanel, "PublicUser");
+                break;
+        }
     }
 
     private JPanel createAdminPanel() {
@@ -77,7 +85,7 @@ public class UserFrame extends JFrame {
     }
 
     private JPanel createLandOfficerPanel() {
-        JPanel panel = new JPanel(new GridLayout(3, 1, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
 
         JButton conductSearchButton = new JButton("Conduct Land Search");
         conductSearchButton.addActionListener(e -> conductLandSearch());
@@ -88,9 +96,13 @@ public class UserFrame extends JFrame {
         JButton processTransferButton = new JButton("Process Transfer");
         processTransferButton.addActionListener(e -> processTransfer());
 
+        JButton viewLandOfficerActivitiesButton = new JButton("View Land Officer Activities");
+        viewLandOfficerActivitiesButton.addActionListener(e -> viewLandOfficerActivities());
+
         panel.add(conductSearchButton);
         panel.add(scheduleInspectionButton);
         panel.add(processTransferButton);
+        panel.add(viewLandOfficerActivitiesButton);
         return panel;
     }
 
@@ -122,6 +134,11 @@ public class UserFrame extends JFrame {
 
     private void processTransfer() {
         JOptionPane.showMessageDialog(this, "Process Transfer clicked");
+    }
+
+    private void viewLandOfficerActivities() {
+        // Code to view Land Officer activities
+        JOptionPane.showMessageDialog(this, "View Land Officer Activities clicked");
     }
 
     private void searchLand() {
