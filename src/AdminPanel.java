@@ -8,22 +8,19 @@ import javax.swing.table.DefaultTableModel;
 public class AdminPanel extends JPanel {
     private JTable userTable;
     private DefaultTableModel tableModel;
-    private JButton refreshButton, deleteButton, editButton, addButton;
-    private JTextArea statusArea; // To display status messages
+    private JButton refreshButton, deleteButton, editButton, addButton, switchToLandOfficerButton;
+    private LandOfficer landOfficerPanel;
 
     public AdminPanel() {
         setLayout(new BorderLayout());
+
+        // Initialize Land Officer
+        landOfficerPanel = new LandOfficer();
 
         // Table setup
         tableModel = new DefaultTableModel(new String[]{"Username", "Role"}, 0);
         userTable = new JTable(tableModel);
         add(new JScrollPane(userTable), BorderLayout.CENTER);
-
-        // Status area setup
-        statusArea = new JTextArea(3, 30);
-        statusArea.setEditable(false);
-        statusArea.setFont(new Font("SansSerif", Font.ITALIC, 12));
-        add(new JScrollPane(statusArea), BorderLayout.SOUTH);
 
         // Buttons
         JPanel buttonPanel = new JPanel();
@@ -31,18 +28,21 @@ public class AdminPanel extends JPanel {
         deleteButton = new JButton("Delete User");
         editButton = new JButton("Edit User");
         addButton = new JButton("Add User");
+        switchToLandOfficerButton = new JButton("Land Officer Panel");
 
         refreshButton.addActionListener(e -> loadUsers());
         deleteButton.addActionListener(e -> deleteUser());
         editButton.addActionListener(e -> editUser());
         addButton.addActionListener(e -> addUser());
+        switchToLandOfficerButton.addActionListener(e -> switchToLandOfficer());
 
         buttonPanel.add(refreshButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(editButton);
         buttonPanel.add(addButton);
+        buttonPanel.add(switchToLandOfficerButton);
 
-        add(buttonPanel, BorderLayout.NORTH);
+        add(buttonPanel, BorderLayout.SOUTH);
 
         // Load initial data
         loadUsers();
@@ -50,7 +50,6 @@ public class AdminPanel extends JPanel {
 
     private void loadUsers() {
         tableModel.setRowCount(0); // Clear existing data
-        statusArea.setText(""); // Clear status message
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/land_management", "root", "")) {
             String sql = "SELECT username, role FROM users";
@@ -75,7 +74,6 @@ public class AdminPanel extends JPanel {
         }
 
         String username = (String) tableModel.getValueAt(selectedRow, 0);
-        String role = (String) tableModel.getValueAt(selectedRow, 1);
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/land_management", "root", "")) {
             String sql = "DELETE FROM users WHERE username = ?";
@@ -83,9 +81,7 @@ public class AdminPanel extends JPanel {
                 stmt.setString(1, username);
                 stmt.executeUpdate();
                 loadUsers();
-                String message = "User deleted: " + username + " (Role: " + role + ")";
-                statusArea.setText(message); // Display status message
-                logActivity("User deleted: " + username + " (Role: " + role + ")");
+                logActivity("User deleted: " + username);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -172,6 +168,17 @@ public class AdminPanel extends JPanel {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private void switchToLandOfficer() {
+        // Display the Land Officer panel
+        JPanel landOfficerPanel = new LandOfficer().createLandOfficerPanel();
+        JFrame landOfficerFrame = new JFrame("Land Officer Panel");
+        landOfficerFrame.setSize(400, 300);
+        landOfficerFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        landOfficerFrame.add(landOfficerPanel);
+        landOfficerFrame.setLocationRelativeTo(null);
+        landOfficerFrame.setVisible(true);
     }
 
     private void logActivity(String message) {
