@@ -79,7 +79,7 @@ public class UserFrame extends JFrame {
     private JPanel createLandOfficerPanel() {
         JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
 
-        JButton conductSearchButton = new JButton("Conduct Land Search");
+        JButton conductSearchButton = new JButton("Review Land Application");
         conductSearchButton.addActionListener(e -> conductLandSearch());
 
         JButton scheduleInspectionButton = new JButton("Schedule Inspection");
@@ -117,7 +117,7 @@ public class UserFrame extends JFrame {
     }
 
     private void conductLandSearch() {
-        JOptionPane.showMessageDialog(this, "Conduct Land Search clicked");
+        JOptionPane.showMessageDialog(this, "Review Land Application");
     }
 
     private void scheduleInspection() {
