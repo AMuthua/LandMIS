@@ -3,9 +3,6 @@ import java.awt.*;
 
 public class UserFrame extends JFrame {
     private User user;
-    private JPanel mainPanel;
-    private CardLayout cardLayout;
-    private JFrame adminFrame; // Track the instance of the AdminPanel frame
 
     public UserFrame(User user) {
         this.user = user;
@@ -19,16 +16,26 @@ public class UserFrame extends JFrame {
     }
 
     private void initComponents() {
-        mainPanel = new JPanel(new BorderLayout());
-        cardLayout = new CardLayout();
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        JLabel welcomeLabel = new JLabel("Welcome, " + user.getUsername() + "!", JLabel.CENTER);
+        mainPanel.add(welcomeLabel, BorderLayout.NORTH);
 
-        JPanel contentPanel = new JPanel(cardLayout);
-        contentPanel.add(createAdminPanel(), "Admin");
-        contentPanel.add(createLandOfficerPanel(), "LandOfficer");
-        contentPanel.add(createGeneralPublicPanel(), "PublicUser");
+        JPanel userPanel;
+        switch (user.getRole()) {
+            case "Admin":
+                userPanel = createAdminPanel();
+                break;
+            case "LandOfficer":
+                userPanel = createLandOfficerPanel();
+                break;
+            case "PublicUser":
+                userPanel = createGeneralPublicPanel();
+                break;
+            default:
+                userPanel = new JPanel();
+        }
 
-        mainPanel.add(new JLabel("Welcome, " + user.getUsername() + "!", JLabel.CENTER), BorderLayout.NORTH);
-        mainPanel.add(contentPanel, BorderLayout.CENTER);
+        mainPanel.add(userPanel, BorderLayout.CENTER);
 
         JButton logoutButton = new JButton("Logout");
         logoutButton.addActionListener(e -> {
@@ -38,22 +45,6 @@ public class UserFrame extends JFrame {
         mainPanel.add(logoutButton, BorderLayout.SOUTH);
 
         add(mainPanel);
-
-        // Show the panel based on the user's role
-        switch (user.getRole()) {
-            case "Admin":
-                cardLayout.show(contentPanel, "Admin");
-                break;
-            case "LandOfficer":
-                cardLayout.show(contentPanel, "LandOfficer");
-                break;
-            case "PublicUser":
-                cardLayout.show(contentPanel, "PublicUser");
-                break;
-            default:
-                cardLayout.show(contentPanel, "PublicUser");
-                break;
-        }
     }
 
     private JPanel createAdminPanel() {
@@ -71,21 +62,14 @@ public class UserFrame extends JFrame {
     }
 
     private void manageUsers() {
-        // Check if the adminFrame is already visible
-        if (adminFrame == null || !adminFrame.isVisible()) {
-            adminFrame = new JFrame("Manage Users");
-            adminFrame.setSize(600, 400);
-            adminFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            adminFrame.setLocationRelativeTo(null);
+        JFrame adminFrame = new JFrame("Manage Users");
+        adminFrame.setSize(600, 400);
+        adminFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        adminFrame.setLocationRelativeTo(null);
 
-            AdminPanel adminPanel = new AdminPanel();
-            adminFrame.add(adminPanel);
-            adminFrame.setVisible(true);
-        } else {
-            // If adminFrame is already open, bring it to the front
-            adminFrame.toFront();
-            adminFrame.requestFocus();
-        }
+        AdminPanel adminPanel = new AdminPanel();
+        adminFrame.add(adminPanel);
+        adminFrame.setVisible(true);
     }
 
     private void generateReports() {
